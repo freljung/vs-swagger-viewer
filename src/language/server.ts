@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import {
 	createConnection,
 	TextDocuments,
-	TextDocument,
 	Diagnostic,
 	DiagnosticSeverity,
 	ProposedFeatures,
@@ -11,8 +10,12 @@ import {
 	CompletionItem,
 	CompletionItemKind,
 	TextDocumentPositionParams,
-	Files
+	TextDocumentSyncKind,
+	Files,
+	TextDocumentIdentifier
 } from 'vscode-languageserver';
+import { TextDocument } from 'vscode-languageserver-textdocument';
+
 import * as SwaggerParser from 'swagger-parser';
 import * as YAML from 'js-yaml';
 import * as path from 'path';
@@ -23,7 +26,7 @@ const SWAGGER_CODE_COMPLTE_DEFS = [
 
 let connection = createConnection(ProposedFeatures.all);
 
-let documents: TextDocuments = new TextDocuments();
+let documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
 let hasConfigurationCapability: boolean = false;
 let hasWorkspaceFolderCapability: boolean = false;
@@ -43,7 +46,7 @@ connection.onInitialize((params: InitializeParams) => {
 
 	return {
 		capabilities: {
-			textDocumentSync: documents.syncKind,
+			textDocumentSync: TextDocumentSyncKind.Full,
 			completionProvider: {
 				resolveProvider: true,
 				triggerCharacters: ['"', ':']
